@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skin Disease Classifier</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h1>Skin Disease Classifier</h1>
+      <p>Upload an image from your device or capture a photo using camera.</p>
+
+      <div class="buttons">
+        <button onclick="document.getElementById('deviceInput').click()">
+          Upload from Device
+        </button>
+
+      </div>
+
+      <input type="file" id="deviceInput" accept="image/*" hidden />
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden />
+
+      <div id="previewBox" class="preview-box hidden">
+        <img id="previewImage" />
+      </div>
+
+      <button id="predictBtn" class="predict-btn">Predict Disease</button>
+
+      <div id="loader" class="loader hidden">Predicting...</div>
+
+      <div id="resultBox" class="result-box hidden">
+        <h2>Prediction Result</h2>
+        <p><strong>Disease:</strong> <span id="diseaseName"></span></p>
+        <p><strong>Confidence:</strong> <span id="confidence"></span>%</p>
+      </div>
+
+      <p class="note">
+        Note: This is for educational purposes only. Do not use it as medical diagnosis.
+      </p>
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

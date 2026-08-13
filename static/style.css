@@ -2,14 +2,50 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: linear-gradient(135deg, #dbeafe, #f8fafc);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.navbar {
+  width: 100%;
+  min-height: 64px;
+  padding: 16px 38px;
+  box-sizing: border-box;
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(30, 58, 138, 0.22);
+}
+
+.nav-content {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.team-name {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.team-credit {
+  font-size: 14px;
+  color: #dbeafe;
 }
 
 .container {
-  min-height: 100vh;
+  min-height: 0;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px;
+  padding: 20px 30px;
+  box-sizing: border-box;
 }
 
 .card {
@@ -53,6 +89,11 @@ button:hover {
   background: #1d4ed8;
 }
 
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .predict-btn {
   margin-top: 20px;
   background: #16a34a;
@@ -68,7 +109,7 @@ button:hover {
 
 .preview-box img {
   width: 100%;
-  max-height: 330px;
+  max-height: min(25vh, 220px);
   object-fit: contain;
   border-radius: 12px;
   border: 1px solid #cbd5e1;
@@ -86,6 +127,56 @@ button:hover {
   color: #166534;
 }
 
+/* Keep the photo and prediction result visible together on desktop. */
+.card.has-result {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.card.has-result h1 {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-size: 30px;
+}
+
+.card.has-result .buttons {
+  margin: 14px 0;
+}
+
+.card.has-result .preview-box {
+  margin-top: 10px;
+}
+
+.card.has-result .preview-box img {
+  max-height: min(15vh, 135px);
+}
+
+.card.has-result .predict-btn {
+  margin-top: 12px;
+}
+
+.card.has-result .result-box {
+  margin-top: 12px;
+  padding: 12px;
+}
+
+.card.has-result .result-box h2 {
+  margin: 4px 0 10px;
+}
+
+.card.has-result .result-box p {
+  margin: 8px 0;
+}
+
+.card.has-result .note {
+  display: none;
+}
+
+.reset-btn {
+  margin-top: 8px;
+  background: #2563eb;
+}
+
 .loader {
   margin-top: 15px;
   color: #2563eb;
@@ -99,5 +190,83 @@ button:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.camera-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.camera-panel {
+  width: min(100%, 620px);
+  padding: 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.camera-panel h2 {
+  margin: 0 0 16px;
+  color: #1e293b;
+}
+
+#cameraPreview {
+  width: 100%;
+  max-height: 60vh;
+  border-radius: 12px;
+  background: #0f172a;
+  object-fit: contain;
+}
+
+.camera-status {
+  min-height: 20px;
+  margin: 12px 0;
+}
+
+.camera-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.secondary-btn {
+  background: #64748b;
+}
+
+.secondary-btn:hover {
+  background: #475569;
+}
+
+@media (max-width: 560px) {
+  body {
+    overflow: auto;
+  }
+
+  .navbar {
+    min-height: auto;
+    padding: 16px 18px;
+  }
+
+  .nav-content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .container {
+    padding: 18px;
+  }
+
+  .card {
+    padding: 22px;
+  }
 }

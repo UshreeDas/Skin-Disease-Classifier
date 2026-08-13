@@ -12,3 +12,4 @@ uploads/
 models/
 .DS_Store
 Thumbs.db
+.vercel

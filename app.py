@@ -27,10 +27,27 @@ CLASS_PATH = BASE_DIR / "model" / "class_names.json"
 runtime_info = configure_tensorflow_runtime(tf)
 print(f"Runtime: {runtime_info['accelerator']} ({', '.join(runtime_info['gpu_names']) or 'CPU'})")
 
+# Constrain TF's internal thread pools. Hosts with very small CPU allocations
+# (e.g. free-tier containers) still report the underlying machine's full core
+# count, so TF's default thread pool sizing oversubscribes and wastes memory
+# it doesn't have room for.
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+
 model = tf.keras.models.load_model(MODEL_PATH)
 
 with open(CLASS_PATH, "r", encoding="utf-8") as f:
     class_names = json.load(f)
+
+# Warm up the model with one dummy prediction at boot. The first call to
+# model.predict() pays a one-time cost (graph tracing/buffer allocation) that
+# can otherwise make a user's first real request unexpectedly slow or, on a
+# memory-constrained host, tip it over the limit mid-request.
+try:
+    model.predict(np.zeros((1, 224, 224, 3), dtype=np.float32), verbose=0)
+    print("Model warm-up prediction complete.")
+except Exception as warm_up_error:
+    print(f"Model warm-up failed: {warm_up_error}")
 
 EDUCATIONAL_INFORMATION = {
     "Acne": {

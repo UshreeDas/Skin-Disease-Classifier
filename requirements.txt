@@ -3,4 +3,5 @@ tensorflow==2.19.1
 numpy
 pillow
 kaggle
+reportlab
 gunicorn

@@ -126,6 +126,24 @@ http://127.0.0.1:5000/runtime
 - `static/style.css` handles the responsive design and visual layout.
 - `static/script.js` previews the image and sends it to Flask using `fetch`.
 
+## Deployment (Render)
+
+The app is set up to deploy on [Render](https://render.com) as a Python web service running behind `gunicorn`.
+
+1. Push this repo to GitHub (the model files in `model/` are small enough to commit directly, no LFS needed).
+2. In Render, choose **New > Blueprint** and point it at this repo. Render will read [render.yaml](render.yaml) and create the service automatically.
+   - Alternatively, choose **New > Web Service** manually and set:
+     - Build command: `pip install -r requirements.txt`
+     - Start command: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120`
+3. Deploy. First boot is slow (TensorFlow import + model load), subsequent requests are fast.
+
+Notes:
+
+- `render.yaml` defaults to Render's **free** plan (512 MB RAM). TensorFlow plus the model can be tight on that plan — if the service fails to boot or crashes under load, bump the plan to **Starter** or higher in the Render dashboard.
+- The start command uses a single worker with multiple threads on purpose, so only one copy of the model is loaded into memory. Don't raise `--workers` without also raising the plan's RAM.
+- The free plan spins the service down after inactivity; the next request will be slow while it wakes up and reloads the model.
+- A generic `Procfile` is also included, so the same setup works on Railway, Heroku, or any platform that reads it.
+
 ## Important Note
 
 This project is for learning and demonstration purposes only. Skin disease prediction from images should not be treated as a medical diagnosis.

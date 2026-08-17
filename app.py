@@ -21,30 +21,38 @@ from runtime_config import configure_tensorflow_runtime
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "model" / "skin_model.keras"
+MODEL_PATH = BASE_DIR / "model" / "skin_model.tflite"
 CLASS_PATH = BASE_DIR / "model" / "class_names.json"
 
 runtime_info = configure_tensorflow_runtime(tf)
 print(f"Runtime: {runtime_info['accelerator']} ({', '.join(runtime_info['gpu_names']) or 'CPU'})")
 
-# Constrain TF's internal thread pools. Hosts with very small CPU allocations
-# (e.g. free-tier containers) still report the underlying machine's full core
-# count, so TF's default thread pool sizing oversubscribes and wastes memory
-# it doesn't have room for.
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
-
-model = tf.keras.models.load_model(MODEL_PATH)
+# Serve with the TFLite interpreter rather than the full Keras model. TFLite
+# uses pre-allocated fixed-size buffers and skips Keras/tf.function graph
+# tracing, which is both much faster and much lighter on CPU-only,
+# memory-constrained hosts (see convert_to_tflite.py for the conversion step).
+# num_threads=1 matches hosts with very small CPU allocations (e.g. free-tier
+# containers), where a larger thread pool would just add scheduling overhead.
+interpreter = tf.lite.Interpreter(model_path=str(MODEL_PATH), num_threads=1)
+interpreter.allocate_tensors()
+input_details = interpreter.get_input_details()[0]
+output_details = interpreter.get_output_details()[0]
 
 with open(CLASS_PATH, "r", encoding="utf-8") as f:
     class_names = json.load(f)
 
-# Warm up the model with one dummy prediction at boot. The first call to
-# model.predict() pays a one-time cost (graph tracing/buffer allocation) that
-# can otherwise make a user's first real request unexpectedly slow or, on a
-# memory-constrained host, tip it over the limit mid-request.
+
+def run_inference(img_array):
+    interpreter.set_tensor(input_details["index"], img_array)
+    interpreter.invoke()
+    return interpreter.get_tensor(output_details["index"])
+
+
+# Warm up the interpreter with one dummy prediction at boot, so any one-time
+# allocation cost happens at boot (where a slow start is tolerated) instead
+# of on a user's first real request.
 try:
-    model.predict(np.zeros((1, 224, 224, 3), dtype=np.float32), verbose=0)
+    run_inference(np.zeros((1, 224, 224, 3), dtype=np.float32))
     print("Model warm-up prediction complete.")
 except Exception as warm_up_error:
     print(f"Model warm-up failed: {warm_up_error}")
@@ -86,7 +94,7 @@ DEFAULT_INFORMATION = {
 def preprocess_image(file):
     img = Image.open(file).convert("RGB")
     img = img.resize((224, 224))
-    img_array = np.array(img)
+    img_array = np.array(img, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
@@ -111,7 +119,7 @@ def predict():
 
     try:
         img_array = preprocess_image(file)
-        predictions = model.predict(img_array, verbose=0)
+        predictions = run_inference(img_array)
 
         predicted_index = int(np.argmax(predictions[0]))
         confidence = float(np.max(predictions[0])) * 100

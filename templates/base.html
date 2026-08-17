@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DermaVision - AI-powered skin disease classifier for educational and research use.">
+  <title>{% block title %}DermaVision{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main navigation">
+      <a class="brand" href="{{ url_for('index') }}" aria-label="DermaVision home">
+        <img class="brand-icon" src="{{ url_for('static', filename='logo.png') }}" alt="">
+        <span class="brand-wordmark"><span>Derma</span><span>Vision</span></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <div class="nav-links" id="nav-links">
+        <a href="{{ url_for('index') }}" class="{% if active_page == 'home' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('predict_page') }}" class="{% if active_page == 'predict' %}active{% endif %}">Predict Disease</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>DermaVision</strong>
+      <span>AI-Powered Skin Disease Classifier</span>
+    </div>
+    <p>Developed by Team TechSHE · Ushree Das &amp; Nilajana Pal · Mentored by Prof. Dr. Sudip Dogra</p>
+  </footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', function () {
+      const links = document.querySelector('.nav-links');
+      const open = links.classList.toggle('open');
+      this.setAttribute('aria-expanded', String(open));
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

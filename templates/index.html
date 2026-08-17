@@ -1,70 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Skin Disease Classifier</title>
-  <link rel="stylesheet" href="/static/style.css" />
-</head>
-<body>
-  <nav class="navbar" aria-label="Site information">
-    <div class="nav-content">
-      <span class="team-name">DermaVision Team</span>
-      <span class="team-credit">Made by Ushree Das and Nilanjana Pal</span>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="card">
-      <h1>Skin Disease Classifier</h1>
-      <p>Upload an image from your device or capture a photo using camera.</p>
-
-      <div class="buttons">
-        <button type="button" id="uploadBtn">
-          Upload from Device
-        </button>
-
-        <button type="button" id="cameraBtn">
-          Capture Photo
-        </button>
-      </div>
-
-      <input type="file" id="deviceInput" accept="image/*" hidden />
-
-      <div id="previewBox" class="preview-box hidden">
-        <img id="previewImage" />
-      </div>
-
-      <button id="predictBtn" class="predict-btn">Predict Disease</button>
-
-      <div id="loader" class="loader hidden">Predicting...</div>
-
-      <div id="resultBox" class="result-box hidden">
-        <h2>Prediction Result</h2>
-        <p><strong>Disease:</strong> <span id="diseaseName"></span></p>
-        <p><strong>Confidence:</strong> <span id="confidence"></span>%</p>
-        <button type="button" id="resetBtn" class="reset-btn">Start New Prediction</button>
-      </div>
-
-      <p class="note">
-        Note: This is for educational purposes only. Do not use it as a medical diagnosis.
-      </p>
-    </div>
+{% extends "base.html" %}
+{% block title %}DermaVision | AI-Powered Skin Disease Classifier{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <p class="eyebrow">DERMATOLOGY · AI · EDUCATION</p>
+    <h1>AI-Powered Skin Disease Classification</h1>
+    <p class="hero-copy">DermaVision is an AI-powered skin disease classification platform designed to assist in the preliminary identification of skin conditions from images. Upload or capture an image and allow the trained machine-learning model to analyze it within seconds.</p>
+    <a class="button button-primary hero-button" href="{{ url_for('predict_page') }}">Predict Disease <span>→</span></a>
   </div>
+  <aside class="hero-card" aria-label="Project details">
+    <span class="hero-card-icon">✚</span>
+    <p>Developed by</p>
+    <h2>Team TechSHE</h2>
+    <div class="team-list"><strong>Ushree Das</strong><strong>Nilajana Pal</strong></div>
+    <div class="mentor"><span>Mentored by</span><strong>Prof. Dr. Sudip Dogra</strong></div>
+  </aside>
+</section>
 
-  <div id="cameraModal" class="camera-modal hidden" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
-    <div class="camera-panel">
-      <h2 id="cameraTitle">Take a photo</h2>
-      <video id="cameraPreview" autoplay playsinline muted></video>
-      <canvas id="cameraCanvas" hidden></canvas>
-      <p id="cameraStatus" class="camera-status" aria-live="polite"></p>
-      <div class="camera-actions">
-        <button type="button" id="takePhotoBtn">Take Photo</button>
-        <button type="button" id="cancelCameraBtn" class="secondary-btn">Cancel</button>
-      </div>
-    </div>
-  </div>
+<section class="home-info">
+  <article><span>◈</span><h2>Image-based analysis</h2><p>Upload a clear image or use your device camera to begin a model-assisted analysis.</p></article>
+  <article><span>⌁</span><h2>Educational insights</h2><p>Review general background information and care guidance after each result.</p></article>
+  <article><span>▤</span><h2>Clear reporting</h2><p>Create a downloadable academic report with the image, result, and educational notes.</p></article>
+</section>
 
-  <script src="/static/script.js"></script>
-</body>
-</html>
+<section class="home-disclaimer"><strong>Educational and research use only.</strong> DermaVision predictions are not a substitute for professional medical diagnosis or treatment. Always consult a qualified healthcare professional for medical advice.</section>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Predict Disease | DermaVision{% endblock %}
+{% block content %}
+<section class="page-intro compact-intro">
+  <p class="eyebrow">AI IMAGE ANALYSIS</p>
+  <h1>Skin Disease Analysis</h1>
+  <p>Upload a clear image of the affected skin area or capture a photo using your device camera. DermaVision will analyze it using the trained classification model and display its prediction confidence.</p>
+</section>
+
+<section class="analysis-shell" aria-labelledby="analysis-title">
+  <div class="analysis-card">
+    <div class="upload-actions">
+      <button type="button" id="uploadBtn" class="button button-secondary">Upload from Device</button>
+      <button type="button" id="cameraBtn" class="button button-secondary">Capture Photo</button>
+      <input type="file" id="deviceInput" accept="image/*" hidden>
+    </div>
+
+    <div id="emptyState" class="drop-zone">
+      <span class="drop-icon">▣</span>
+      <strong>Select a clear image to begin</strong>
+      <span>Use good lighting and keep the affected area in focus.</span>
+    </div>
+
+    <div id="previewBox" class="preview-box hidden">
+      <img id="previewImage" alt="Selected skin image preview">
+      <div class="preview-meta">
+        <span id="fileName">Image selected</span>
+        <button type="button" id="removeImageBtn" class="text-button">Remove image</button>
+      </div>
+    </div>
+
+    <button id="predictBtn" class="button button-primary button-wide" type="button" disabled>Predict Disease</button>
+    <div id="loader" class="loading hidden" role="status" aria-live="polite"><span></span>Analyzing image...</div>
+    <p id="formMessage" class="form-message" role="alert"></p>
+  </div>
+
+  <section id="resultSection" class="result-section hidden" aria-live="polite">
+    <article class="result-card">
+      <p class="eyebrow">AI ANALYSIS RESULT</p>
+      <h2 id="analysis-title">Prediction complete</h2>
+      <div class="result-grid">
+        <div>
+          <span class="result-label">Predicted Disease</span>
+          <strong id="diseaseName">—</strong>
+        </div>
+        <div>
+          <span class="result-label">Confidence</span>
+          <strong id="confidence">—</strong>
+        </div>
+      </div>
+      <div class="confidence-track" aria-label="Prediction confidence"><div id="confidenceBar" class="confidence-bar"></div></div>
+      <div class="result-actions">
+        <button type="button" id="reportBtn" class="button button-primary">Generate Report</button>
+        <button type="button" id="resetBtn" class="button button-plain">Analyze Another Image</button>
+      </div>
+    </article>
+
+    <section class="education-section" aria-labelledby="education-title">
+      <div class="section-heading">
+        <p class="eyebrow">EDUCATIONAL INFORMATION</p>
+        <h2 id="education-title">Understanding <span id="educationDisease">this condition</span></h2>
+      </div>
+      <div id="educationCards" class="education-grid"></div>
+      <p class="medical-disclaimer">This information is provided for educational purposes only and does not constitute medical advice, diagnosis, or a prescription. Consult a qualified dermatologist or healthcare professional for proper diagnosis and treatment.</p>
+    </section>
+  </section>
+</section>
+
+<div id="cameraModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+  <div class="modal-panel camera-panel">
+    <div class="modal-heading"><h2 id="cameraTitle">Capture a photo</h2><button type="button" id="cancelCameraBtn" class="modal-close" aria-label="Close camera">×</button></div>
+    <video id="cameraPreview" autoplay playsinline muted></video>
+    <canvas id="cameraCanvas" hidden></canvas>
+    <p id="cameraStatus" class="camera-status" aria-live="polite"></p>
+    <button type="button" id="takePhotoBtn" class="button button-primary" disabled>Take Photo</button>
+  </div>
+</div>
+
+<div id="reportModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+  <div class="modal-panel report-panel">
+    <div class="modal-heading"><h2 id="reportTitle">Generate Report</h2><button type="button" id="closeReportBtn" class="modal-close" aria-label="Close report dialog">×</button></div>
+    <p>Add patient details to include them in the downloadable educational report.</p>
+    <form id="reportForm">
+      <label>Patient Name<input id="patientName" name="patientName" type="text" maxlength="120" required autocomplete="name"></label>
+      <label>Patient Age<input id="patientAge" name="patientAge" type="number" min="0" max="130" required></label>
+      <p id="reportMessage" class="form-message" role="alert"></p>
+      <div class="modal-actions"><button type="button" id="cancelReportBtn" class="button button-plain">Cancel</button><button type="submit" class="button button-primary">Generate PDF</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='script.js') }}"></script>{% endblock %}
